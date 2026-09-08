@@ -34,6 +34,7 @@ description for details.
 Good luck and happy searching!
 """
 
+from tracemalloc import start
 from typing import List, Tuple, Any
 from game import Directions
 from game import Agent
@@ -295,15 +296,27 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        start = self.startingPosition
 
+        visitedCorners = [False, False, False, False]
+
+        for i, corner in enumerate(self.corners):
+            if start == corner:
+              visitedCorners[i] = True
+        return (start, tuple(visitedCorners))
+
+
+        
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        currentPosition, visitedCorners = state
+        if visitedCorners == (True, True, True, True):
+            return True
+        else:
+            return False
+        
 
     def getSuccessors(self, state: Any):
         """
@@ -318,14 +331,19 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            currentPosition, visitedCorners = state
+            x,y = currentPosition
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            addedvisitedCorners = list(visitedCorners)
+            if not self.walls[nextx][nexty]:
+                for i, corner in enumerate(self.corners):
+                    if (nextx, nexty) == corner:
+                        addedvisitedCorners[i] = True
+                addedvisitedCorners = tuple(addedvisitedCorners)
+                nextState = ((nextx, nexty), addedvisitedCorners)
+                successors.append( ( nextState, action, 1) )
 
-            "*** YOUR CODE HERE ***"
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

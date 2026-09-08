@@ -173,9 +173,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
                 h = heuristic(successorState,problem)
                 addedPath = currentPath + [action]
                 addedCost = currentCost + stepCost
-                frontier.push((successorState,addedPath,addedCost),priority= addedCost + h)
-
-    util.raiseNotDefined()
+                frontier.push((successorState,addedPath,addedCost),addedCost + h)
 
 
 # Abbreviations
